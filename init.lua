@@ -1,0 +1,2 @@
+require("heiyiu")
+print("hello")
