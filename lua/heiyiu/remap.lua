@@ -1,2 +1,4 @@
-vim.g.mapleader = " "
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
 vim.keymap.set("n", "<leader>h", ":Ex<CR>")

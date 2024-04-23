@@ -1,3 +1,3 @@
-require("heiyiu.remap")
 require("heiyiu.set")
-require("heiyiu.packer")
+require("heiyiu.remap")
+require("heiyiu.lazy")
