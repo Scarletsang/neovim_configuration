@@ -1,6 +1,6 @@
 return {
   'nvim-treesitter/nvim-treesitter',
-  run = ":TSUpdate",
+  run = ":TSEnable",
   config = function()
     require'nvim-treesitter.configs'.setup {
       -- A list of parser names, or "all" (the five listed parsers should always be installed)
@@ -13,6 +13,8 @@ return {
           "vim", "vimdoc",
           "query",
           "diff",
+          "make", "cmake",
+          "markdown",
       },
     
       -- Install parsers synchronously (only applied to `ensure_installed`)
