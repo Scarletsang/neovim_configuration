@@ -3,12 +3,11 @@ return {
   tag = '0.1.5',
   -- or                            , branch = '0.1.x',
   dependencies = { 'nvim-lua/plenary.nvim' },
-  config = function()
-    local builtin = require('telescope.builtin')
-    vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
-    vim.keymap.set('n', '<C-p>', builtin.git_files, {})
-    vim.keymap.set('n', '<leader>ps', function()
-      builtin.grep_string({ search = vim.fn.input("Grep > ") })
-    end)
-  end,
+  keys = {
+    {'<leader>pf', require('telescope.builtin').find_files},
+    {'<C-p>', require('telescope.builtin').git_files},
+    {'<leader>ps', function()
+      require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") })
+    end},
+  },
 }

@@ -11,7 +11,8 @@ return {
           "javascript", "typescript",
           "lua",
           "vim", "vimdoc",
-          "query"
+          "query",
+          "diff",
       },
     
       -- Install parsers synchronously (only applied to `ensure_installed`)
