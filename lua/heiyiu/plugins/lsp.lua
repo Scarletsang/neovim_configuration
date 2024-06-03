@@ -27,6 +27,7 @@ return {
       ensure_installed = {
         "lua_ls",
         "rust_analyzer",
+        "glsl_analyzer",
         "clangd",
       },
       handlers = {
