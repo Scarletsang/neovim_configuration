@@ -7,6 +7,8 @@ vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = false
+vim.opt.listchars = "tab:. ,trail:~,extends:>,precedes:<"
+vim.opt.list = true
 
 vim.opt.smartindent = true
 
