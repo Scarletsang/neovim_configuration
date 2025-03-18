@@ -44,6 +44,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 vim.keymap.set("n", "<leader>h", ":Ex<CR>")
+vim.keymap.set('t', '<C-c>', [[<C-c><C-\><C-n>:close<CR>]])
 -- vim.keymap.set("n", "<leader>s", ":vsplit<CR>")
 -- vim.keymap.set("n", "<leader>c", ":close<CR>")
 -- Control W + hjkl to move between windows
@@ -330,10 +331,11 @@ require('lazy').setup({
       config = function()
         local toggleterm = require("toggleterm")
         toggleterm.setup{
+          auto_scroll = true,
           size = 5,
         }
         vim.keymap.set("n", "<leader>t", function()
-          toggleterm.exec(vim.fn.input("Command > "))
+          toggleterm.exec(vim.fn.input("Command > "), nil, nil, nil, nil, nil, false)
         end)
         local Terminal = require('toggleterm.terminal').Terminal
         local lazygit = Terminal:new({
