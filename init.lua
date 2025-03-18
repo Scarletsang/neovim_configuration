@@ -83,11 +83,6 @@ require('lazy').setup({
 -- `gc[count]{motion}` - (Op-pending) Toggles the region using linewise comment
 -- `gb[count]{motion}` - (Op-pending) Toggles the region using blockwise comment
     {'numToStr/Comment.nvim', opts = {}, lazy = false},
-    {'tpope/vim-fugitive',
-      config = function()
-        vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
-      end
-    },
     {'theprimeagen/harpoon', branch = 'harpoon2', dependencies = {'nvim-lua/plenary.nvim'},
       keys = {
         {"<leader>a", nil},
@@ -330,6 +325,42 @@ require('lazy').setup({
       keys = {
         {"<leader>u", vim.cmd.UndotreeToggle},
       }
-    }
-  }
+    },
+    {'akinsho/toggleterm.nvim', version = "*",
+      config = function()
+        local toggleterm = require("toggleterm")
+        toggleterm.setup{
+          size = 5,
+        }
+        vim.keymap.set("n", "<leader>t", function()
+          toggleterm.exec(vim.fn.input("Command > "))
+        end)
+        local Terminal = require('toggleterm.terminal').Terminal
+        local lazygit = Terminal:new({
+          cmd = "lazygit",
+          dir = "git_dir",
+          direction = "float",
+          -- function to run on opening the terminal
+          on_open = function(term)
+            vim.cmd("startinsert!")
+            vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", {noremap = true, silent = true})
+          end,
+          -- function to run on closing the terminal
+          on_close = function(_)
+            vim.cmd("startinsert!")
+          end,
+        })
+
+        local function lazygit_toggle()
+          lazygit:toggle()
+        end
+        vim.keymap.set("n", "<leader>gg", lazygit_toggle)
+      end,
+    },
+    -- {'tpope/vim-fugitive',
+    --   config = function()
+    --     vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
+    --   end
+    -- },
+	}
 })
