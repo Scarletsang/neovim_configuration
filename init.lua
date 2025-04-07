@@ -83,7 +83,7 @@ require('lazy').setup({
 -- `[count]gbc` - Toggles the number of line given as a prefix-count using blockwise
 -- `gc[count]{motion}` - (Op-pending) Toggles the region using linewise comment
 -- `gb[count]{motion}` - (Op-pending) Toggles the region using blockwise comment
-    {'numToStr/Comment.nvim', opts = {}, lazy = false},
+    {'numToStr/Comment.nvim', keys = {{"gcc", nil}}, opts = {}},
     {'theprimeagen/harpoon', branch = 'harpoon2', dependencies = {'nvim-lua/plenary.nvim'},
       keys = {
         {"<leader>a", nil},
@@ -370,6 +370,10 @@ require('lazy').setup({
       }
     },
     {'akinsho/toggleterm.nvim', version = "*",
+      keys = {
+        {"<leader>t", nil},
+        {"<leader>gg", nil},
+      },
       config = function()
         local toggleterm = require("toggleterm")
         toggleterm.setup{
