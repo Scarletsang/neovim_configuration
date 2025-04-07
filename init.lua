@@ -111,104 +111,119 @@ require('lazy').setup({
         vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end)
       end
     },
+    {'saghen/blink.cmp',
+      -- optional: provides snippets for the snippet source
+      dependencies = { 'rafamadriz/friendly-snippets' },
+
+      -- use a release tag to download pre-built binaries
+      version = '1.*',
+      -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+      -- build = 'cargo build --release',
+      -- If you use nix, you can build from source using latest nightly rust with:
+      -- build = 'nix run .#build-plugin',
+
+      ---@module 'blink.cmp'
+      ---@type blink.cmp.Config
+      opts = {
+        -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
+        -- 'super-tab' for mappings similar to vscode (tab to accept)
+        -- 'enter' for enter to accept
+        -- 'none' for no mappings
+        --
+        -- All presets have the following mappings:
+        -- C-space: Open menu or open docs if already open
+        -- C-n/C-p or Up/Down: Select next/previous item
+        -- C-e: Hide menu
+        -- C-k: Toggle signature help (if signature.enabled = true)
+        --
+        -- See :h blink-cmp-config-keymap for defining your own keymap
+        keymap = {
+          preset = 'default',
+          ['<Tab>'] = { 'select_next', 'fallback' },
+          ['<S-Tab>'] = { 'select_prev', 'fallback' },
+          ['<CR>'] = { 'accept', 'fallback' },
+        },
+
+        appearance = {
+          -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+          -- Adjusts spacing to ensure icons are aligned
+          nerd_font_variant = 'mono',
+          kind_icons = {
+            Text = 'txt',
+            Method = 'meth',
+            Function = 'func',
+            Constructor = 'init',
+
+            Field = 'field',
+            Variable = 'var',
+            Property = 'prop',
+
+            Class = 'class',
+            Interface = 'i/f',
+            Struct = 'struct',
+            Module = 'module',
+
+            Unit = 'unit',
+            Value = 'val',
+            Enum = 'enum',
+            EnumMember = 'enumm',
+
+            Keyword = 'keyword',
+            Constant = 'const',
+
+            Snippet = 'sn',
+            Color = 'col',
+            File = 'file',
+            Reference = 'ref',
+            Folder = 'dir',
+            Event = 'event',
+            Operator = 'op',
+            TypeParameter = 'type',
+          },
+        },
+        signature = { enabled = true },
+
+        -- (Default) Only show the documentation popup when manually triggered
+        completion = {
+          documentation = { auto_show = false },
+          menu = { draw = {
+            treesitter = {'lsp'},
+          }},
+        },
+
+        -- Default list of enabled providers defined so that you can extend it
+        -- elsewhere in your config, without redefining it, due to `opts_extend`
+        sources = {
+          default = { 'lsp', 'path', 'snippets', 'buffer' },
+        },
+
+        -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
+        -- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
+        -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
+        --
+        -- See the fuzzy documentation for more information
+        fuzzy = { implementation = "prefer_rust_with_warning" }
+      },
+      opts_extend = { "sources.default" }
+    },
     {'neovim/nvim-lspconfig',
       dependencies = {
         'williamboman/mason.nvim',
         'williamboman/mason-lspconfig.nvim',
-        'hrsh7th/cmp-nvim-lsp',
-        'hrsh7th/cmp-buffer',
-        'hrsh7th/cmp-path',
-        'hrsh7th/cmp-cmdline',
-        'hrsh7th/nvim-cmp',
-        'L3MON4D3/LuaSnip',
-        'saadparwaiz1/cmp_luasnip',
+        'saghen/blink.cmp',
         'j-hui/fidget.nvim',
       },
       config = function()
-        local cmp = require('cmp')
-        local cmp_lsp = require("cmp_nvim_lsp")
-        local capabilities = vim.tbl_deep_extend(
-          "force",
-          {},
-          vim.lsp.protocol.make_client_capabilities(),
-          cmp_lsp.default_capabilities())
-
-        require("fidget").setup({})
         require("mason").setup()
         require("mason-lspconfig").setup({
-          ensure_installed = {
-            "lua_ls",
-            "rust_analyzer",
-            "glsl_analyzer",
-            "clangd",
-          },
-          handlers = {
-            function(server_name) -- default handler (optional)
-              require("lspconfig")[server_name].setup {
-                capabilities = capabilities,
-                on_attach = function(_, bufnr)
-                  local function buf_set_option(...)
-                    vim.api.nvim_buf_set_option(bufnr, ...)
-                  end
-                  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-                  -- Mappings.
-                  local opts = { buffer = bufnr, noremap = true, silent = true }
-                  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-                  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-                  vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-                  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-                  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-                  -- vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)
-                  -- vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
-                  -- vim.keymap.set('n', '<leader>wl', function()
-                  --   print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-                  -- end, opts)
-                  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
-                  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-                  vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-                  vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
-                  vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-                  vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-                  -- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
-                end,
-              }
-            end,
-            ["lua_ls"] = function()
-              local lspconfig = require("lspconfig")
-              lspconfig.lua_ls.setup {
-                capabilities = capabilities,
-                settings = {
-                  Lua = {
-                    runtime = { version = "Lua 5.1" },
-                    diagnostics = {
-                      globals = { "vim", "it", "describe", "before_each", "after_each" },
-                    }
-                  }
-                }
-              }
-            end,
-          }
+          ensure_installed = {"clangd"}
         })
-        local cmp_select = { behavior = cmp.SelectBehavior.Select }
-        cmp.setup({
-          snippet = {
-            expand = function(args)
-              require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-            end,
-          },
-          mapping = cmp.mapping.preset.insert({
-            ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-            ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-            ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-            ["<C-Space>"] = cmp.mapping.complete(),
-          }),
-          sources = cmp.config.sources({
-            { name = 'nvim_lsp' },
-            { name = 'luasnip' }, -- For luasnip users.
-          }, {
-            { name = 'buffer' },
-          })
-        })
+        require("fidget").setup({})
+        local capabilities = require('blink.cmp').get_lsp_capabilities()
+        local lspconfig = require('lspconfig')
+        lspconfig['clangd'].setup({ capabilities = capabilities })
+        lspconfig['ols'].setup({ capabilities = capabilities })
+        lspconfig['lua_ls'].setup({ capabilities = capabilities })
         vim.diagnostic.config({
           -- update_in_insert = true,
           float = {
@@ -220,6 +235,25 @@ require('lazy').setup({
             prefix = "",
           },
         })
+        -- Mappings.
+        local opts = { noremap = true, silent = true }
+        vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+        vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+        vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+        -- vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)
+        -- vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
+        -- vim.keymap.set('n', '<leader>wl', function()
+        --   print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+        -- end, opts)
+        vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
+        vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+        vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+        vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
+        vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+        vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+        -- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
       end
     },
     {'nvim-telescope/telescope.nvim',
@@ -272,6 +306,7 @@ require('lazy').setup({
             "make", "cmake",
             "markdown",
             "glsl",
+            "odin",
           },
           -- Install parsers synchronously (only applied to `ensure_installed`)
           sync_install = false,
