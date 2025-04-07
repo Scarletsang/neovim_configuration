@@ -154,9 +154,9 @@ require('lazy').setup({
             Function = 'func',
             Constructor = 'init',
 
-            Field = 'field',
+            Field = '->',
             Variable = 'var',
-            Property = 'prop',
+            Property = '->',
 
             Class = 'class',
             Interface = 'i/f',
