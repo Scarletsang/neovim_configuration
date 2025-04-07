@@ -223,7 +223,10 @@ require('lazy').setup({
         local lspconfig = require('lspconfig')
         lspconfig['clangd'].setup({ capabilities = capabilities })
         lspconfig['ols'].setup({ capabilities = capabilities })
-        lspconfig['lua_ls'].setup({ capabilities = capabilities })
+        lspconfig['lua_ls'].setup({
+          capabilities = capabilities,
+          settings = { Lua = { runtime = { version = "Lua 5.1" }, diagnostics = { globals = { 'vim' }}}},
+        })
         vim.diagnostic.config({
           -- update_in_insert = true,
           float = {
